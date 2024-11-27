@@ -1,34 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Logger } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Public } from 'src/utils/heplers/public.decorator';
+import { Tokens } from './entities/tokens';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  private readonly logger = new Logger(UserController.name);
+  constructor(private readonly userService: UserService) { }
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+
+
+  @Public()
+  @Post('register')
+  async register(@Body() data: CreateUserDto): Promise<Tokens> {
+    const signIn = await this.userService.register(data);
+    return signIn
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
+  @Public()
+  @Post('login')
+  async login(@Body() data: LoginUserDto): Promise<Tokens> {
+    this.logger.debug({ data });
+    return this.userService.login(data)
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
-  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
-  }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
-  }
 }

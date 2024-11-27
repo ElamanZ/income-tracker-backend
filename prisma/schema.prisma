@@ -19,6 +19,7 @@ model User {
   lastName          String        @map("last_name")
   phone             String        @unique
   encryptedPassword String        @map("encrypted_password")
+  avatarUrl         String?       @map("avatar_url")
   updatedAt         DateTime      @default(now()) @updatedAt @map("updated_at")
   createdAt         DateTime      @default(now()) @map("created_at")
   Transaction       Transaction[]
