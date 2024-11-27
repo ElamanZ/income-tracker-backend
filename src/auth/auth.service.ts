@@ -7,7 +7,7 @@ import { Tokens } from './entities/tokens';
 import { PrismaService } from 'nestjs-prisma';
 
 @Injectable()
-export class UserService {
+export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService) { }

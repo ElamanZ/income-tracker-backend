@@ -1,14 +1,14 @@
 import { Controller, Post, Body, Logger } from '@nestjs/common';
-import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Public } from 'src/utils/heplers/public.decorator';
 import { Tokens } from './entities/tokens';
 import { LoginUserDto } from './dto/login-user.dto';
+import { AuthService } from './auth.service';
 
-@Controller('user')
-export class UserController {
-  private readonly logger = new Logger(UserController.name);
-  constructor(private readonly userService: UserService) { }
+@Controller('auth')
+export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+  constructor(private readonly userService: AuthService) { }
 
 
 
