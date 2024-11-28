@@ -2,47 +2,90 @@ import { Injectable } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { PrismaService } from 'nestjs-prisma';
+import { TransactionFilterDto } from './dto/transaction-filter.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TransactionsService {
   constructor(private prisma: PrismaService) { }
 
 
-  create(createTransactionDto: CreateTransactionDto) {
-    return 'This action adds a new transaction';
+  create(createTransactionDto: CreateTransactionDto, userId: string) {
+    return this.prisma.transaction.create({
+      data: {
+        userId,
+        ...createTransactionDto,
+      },
+    })
   }
 
-  findAll() {
-    return this.prisma.transaction.findMany();
-    // return [
-    //   {
-    //     id: 1,
-    //     comment: 'Transaction 1',
-    //     category: 'Income Boomerang',
-    //     isIncome: true,
-    //     amount: 100,
-    //     date: new Date('2023-05-01'),
-    //   },
-    //   {
-    //     id: 2,
-    //     comment: 'Transaction 2',
-    //     category: 'Sport',
-    //     isIncome: false,
-    //     amount: 200,
-    //     date: new Date('2023-05-02'),
-    //   }
-    // ]
+  findAll(filter: TransactionFilterDto, userId: string) {
+
+    const filters: Prisma.TransactionWhereInput[] = []
+
+    if (filter.comment) {
+      filters.push({
+        comment: filter.comment
+      })
+    }
+
+    if (filter.isIncome) {
+      filters.push({
+        isIncome: filter.isIncome
+      })
+    }
+
+    if (filter.amount) {
+      filters.push({
+        amount: filter.amount
+      })
+    }
+
+    if (filter.date) {
+      filters.push({
+        date: filter.date
+      })
+    }
+
+    if (filter.category) {
+      filters.push({
+        categoryId: filter.category
+      })
+    }
+
+    return this.prisma.transaction.findMany({
+      where: {
+        userId,
+        AND: filters.length > 0 ? filters : undefined,
+      }
+    })
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} transaction`;
+  findOne(id: string, userId: string) {
+    return this.prisma.transaction.findUnique({
+      where: {
+        id,
+        userId,
+      },
+    })
   }
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction`;
+  update(id: string, updateTransactionDto: UpdateTransactionDto, userId: string) {
+    return this.prisma.transaction.update({
+      where: {
+        id,
+        userId,
+      },
+      data: updateTransactionDto,
+    })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} transaction`;
+  remove(id: string, userId: string) {
+    return this.prisma.transaction.delete({
+      where: {
+        id,
+        userId
+      },
+    })
   }
 }

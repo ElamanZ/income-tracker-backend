@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import * as process from 'process';
 import { AppModule } from './app.module';
 import { PrismaClientExceptionFilter, PrismaService } from 'nestjs-prisma';
+import { env } from './env';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -54,7 +55,7 @@ async function bootstrap() {
 
   // Логгер для отображения состояния сервера
   const logger = new Logger('Income Tracker API');
-  const PORT = process.env.PORT || 4200;
+  const PORT = env.PORT || 4200;
 
   await app.listen(PORT, () => {
     logger.verbose(`Application is running on http://localhost:${PORT}/api`);
