@@ -4,8 +4,9 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryFilterDto } from './dto/category-filter.dto';
 import { CurrentUser } from 'src/auth/cummon/decorators/current-user.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
-@UseGuards()
+@ApiBearerAuth()
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) { }
