@@ -5,7 +5,6 @@ import * as bcrypt from 'bcryptjs';
 import { LoginUserDto } from './dto/login-user.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { Tokens } from './entities/tokens';
-import { JwtBaseEntity } from './entities/jwt-base.entity';
 import { env } from 'src/env';
 import { JwtPayload } from './entities/jwt-payload.entity';
 
@@ -14,6 +13,15 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService) { }
+
+
+  async findOne(id: string) {
+    const profile = await this.prisma.user.findUniqueOrThrow({
+      where: { id },
+    });
+
+    return profile;
+  }
 
   async register(createUserDto: CreateUserDto) {
 
