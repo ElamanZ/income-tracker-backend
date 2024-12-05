@@ -39,6 +39,8 @@ model Session {
   updatedAt          DateTime @default(now()) @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
+
+  @@map("sessions")
 }
 
 model Debts {
