@@ -24,14 +24,14 @@ export class AuthController {
 
 
   @Public()
-  @Post('register')
+  @Post('sign-up')
   async register(@Body() data: CreateUserDto): Promise<Tokens> {
     const signIn = await this.userService.register(data);
     return signIn
   }
 
   @Public()
-  @Post('login')
+  @Post('sign-in')
   async login(@Body() data: LoginUserDto): Promise<Tokens> {
     this.logger.debug({ data });
     return this.userService.login(data)

@@ -18,6 +18,7 @@ model User {
   firstName         String?       @map("first_name")
   lastName          String?       @map("last_name")
   phone             String?       @unique
+  balance           Float         @default(0)
   encryptedPassword String?       @map("encrypted_password")
   avatarUrl         String?       @map("avatar_url")
   updatedAt         DateTime?     @default(now()) @updatedAt @map("updated_at")
@@ -25,6 +26,7 @@ model User {
   transactions      Transaction[]
   categories        Category[]
   sessions          Session[]
+  Debts             Debts[]
 
   @@map("users")
 }
@@ -39,6 +41,21 @@ model Session {
   user User @relation(fields: [userId], references: [id])
 }
 
+model Debts {
+  id        String   @id @default(cuid())
+  isMyDebt  Boolean  @default(true) @map("is_my_debt")
+  active    Boolean  @default(true) @map("active")
+  amount    Float    @map("amount")
+  name      String   @map("name")
+  comment   String?  @map("comment")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("debts")
+}
+
 model Transaction {
   id         String   @id @default(cuid())
   comment    String?  @map("comment")
@@ -51,11 +68,14 @@ model Transaction {
   categoryId String   @map("category_id")
   user       User     @relation(fields: [userId], references: [id])
   category   Category @relation(fields: [categoryId], references: [id])
+
+  @@map("transactions")
 }
 
 model Category {
   id           String        @id @default(cuid())
   name         String        @map("name")
+  color        String        @map("color")
   isIncome     Boolean       @map("is_income")
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @default(now()) @map("updated_at")

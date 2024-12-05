@@ -4,6 +4,7 @@ import { z } from "zod";
 export const createCategorySchema = z.object({
     name: z.string(),
     isIncome: z.boolean(),
+    color: z.string(),
 })
 
 export class CreateCategoryDto
@@ -15,4 +16,6 @@ export class CreateCategoryDto
     name!: string;
     @ApiProperty()
     isIncome!: boolean;
+    @ApiProperty()
+    color!: string;
 }
