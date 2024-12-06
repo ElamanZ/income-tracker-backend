@@ -21,9 +21,17 @@ export class CategoryController {
 
   @Get()
   findAll(
+    @CurrentUser('uid') userId: string,
     @Query() filter: CategoryFilterDto,
   ) {
-    return this.categoryService.findAll(filter);
+    return this.categoryService.findAll(filter, userId);
+  }
+
+  @Get('grouped')
+  findGrouped(
+    @CurrentUser('uid') userId: string,
+  ): Promise<Record<string, any[]>> {
+    return this.categoryService.findGrouped(userId);
   }
 
   @Get(':id')

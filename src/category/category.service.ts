@@ -18,7 +18,7 @@ export class CategoryService {
     })
   }
 
-  findAll(filter: CategoryFilterDto) {
+  findAll(filter: CategoryFilterDto, userId: string) {
 
     const filters: Prisma.CategoryWhereInput[] = []
 
@@ -36,9 +36,23 @@ export class CategoryService {
 
     return this.prisma.category.findMany({
       where: {
+        userId,
         AND: filters.length > 0 ? filters : undefined,
       }
     })
+  }
+
+  async findGrouped(userId: string): Promise<Record<string, any[]>> {
+    const categories = await this.prisma.category.findMany({
+      where: { userId },
+    });
+
+    const grouped = {
+      income: categories.filter((category) => category.isIncome),
+      expense: categories.filter((category) => !category.isIncome),
+    };
+
+    return grouped;
   }
 
   findOne(id: string, userId: string) {
