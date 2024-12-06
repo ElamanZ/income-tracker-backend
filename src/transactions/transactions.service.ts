@@ -10,7 +10,19 @@ export class TransactionsService {
   constructor(private prisma: PrismaService) { }
 
 
-  create(createTransactionDto: CreateTransactionDto, userId: string) {
+  async create(createTransactionDto: CreateTransactionDto, userId: string) {
+
+    await this.prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        balance: {
+          increment: createTransactionDto.amount * (createTransactionDto.isIncome ? 1 : -1),
+        }
+      }
+    })
+
     return this.prisma.transaction.create({
       data: {
         userId,

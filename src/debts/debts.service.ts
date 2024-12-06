@@ -9,7 +9,19 @@ import { Prisma } from '@prisma/client';
 export class DebtsService {
   constructor(private readonly prisma: PrismaService) { }
 
-  create(createDebtDto: CreateDebtDto, userId: string) {
+  async create(createDebtDto: CreateDebtDto, userId: string) {
+
+    await this.prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        balance: {
+          increment: createDebtDto.amount * (createDebtDto.isMyDebt ? 1 : -1),
+        }
+      }
+    })
+
     return this.prisma.debts.create({
       data: {
         ...createDebtDto,

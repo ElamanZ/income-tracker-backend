@@ -8,7 +8,6 @@ export const createDebtSchema = z.object({
     amount: z.number().default(0),
     name: z.string(),
     comment: z.string().optional(),
-    userId: z.string()
 })
 
 export class CreateDebtDto
@@ -26,6 +25,4 @@ export class CreateDebtDto
     name!: string;
     @ApiPropertyOptional()
     comment?: string;
-    @ApiProperty()
-    userId!: string;
 }
