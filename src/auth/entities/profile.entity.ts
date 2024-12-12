@@ -1,7 +1,4 @@
-import { User } from '@prisma/client';
-import { ApiProperty } from '@nestjs/swagger';
 import { z } from 'zod';
-import { createZodDto } from 'libs/pipes/src';
 
 
 export const profileSchema = z.object({
@@ -13,7 +10,6 @@ export const profileSchema = z.object({
   balance: z.number().default(0)
 });
 
-type Profile = User;
 
 // export class ProfileEntity
 //   extends createZodDto(profileSchema)

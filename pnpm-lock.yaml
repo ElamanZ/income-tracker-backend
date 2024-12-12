@@ -47,6 +47,9 @@ importers:
       helmet:
         specifier: ^8.0.0
         version: 8.0.0
+      nanoid:
+        specifier: 3.3.7
+        version: 3.3.7
       nestjs-prisma:
         specifier: ^0.23.0
         version: 0.23.0(@nestjs/common@10.4.9(reflect-metadata@0.2.2)(rxjs@7.8.1))(@prisma/client@5.22.0(prisma@5.22.0))(chokidar@3.6.0)(prisma@5.22.0)
@@ -2284,6 +2287,11 @@ packages:
   mute-stream@1.0.0:
     resolution: {integrity: sha512-avsJQhyd+680gKXyG/sQc0nXaC6rBkPOfyHYcFb9+hdkqQkR9bdnkJ0AMZhke0oesPqIO+mFFJ+IdBc7mst4IA==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
+
+  nanoid@3.3.7:
+    resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
@@ -5729,6 +5737,8 @@ snapshots:
   mute-stream@0.0.8: {}
 
   mute-stream@1.0.0: {}
+
+  nanoid@3.3.7: {}
 
   natural-compare@1.4.0: {}
 

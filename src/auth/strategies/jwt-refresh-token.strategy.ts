@@ -23,6 +23,25 @@ export class RefreshTokenStrategy extends PassportStrategy(
       passReqToCallback: true,
     } as StrategyOptions);
   }
+  async validate(req: Request, payload: any): Promise<JwtRefreshEntity> {
+    const refreshToken = req.get('Authorization')?.split(' ')[1];
 
+    if (!refreshToken)
+      throw new UnauthorizedException('Refresh token not found');
+
+    const jwtDecoded = await JwtRefreshEntity.createAsync(payload).catch(() => {
+      throw new ForbiddenException('Invalid refresh token');
+    });
+
+    const isRefreshTokenValid = await this.authService.isRefreshTokenValid(
+      jwtDecoded,
+      refreshToken,
+    );
+
+    if (!isRefreshTokenValid)
+      throw new ForbiddenException('Invalid refresh token');
+
+    return jwtDecoded;
+  }
 
 }

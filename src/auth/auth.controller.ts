@@ -1,12 +1,14 @@
 import { Controller, Post, Body, Logger, Get } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Public } from 'src/utils/heplers/public.decorator';
-import { Tokens } from './entities/tokens';
+import { AccessToken, Tokens } from './entities/tokens';
 import { LoginUserDto } from './dto/login-user.dto';
 import { AuthService } from './auth.service';
-import { ApiResponse } from '@nestjs/swagger';
-import { CurrentUser } from './cummon/decorators/current-user.decorator';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { CurrentUser, JwtRefresh } from './cummon/decorators/current-user.decorator';
+import { UseJwtRefreshAuthGuard } from './cummon/decorators/use-jwt-refresh-guard.decorator';
 
+@ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
@@ -37,6 +39,15 @@ export class AuthController {
     return this.userService.login(data)
   }
 
+  @Public()
+  @Post('refresh')
+  @UseJwtRefreshAuthGuard()
+  async refresh(
+    @JwtRefresh('uid') userId: string,
+    @JwtRefresh('jti') tokenId: string,
+  ): Promise<AccessToken> {
+    return this.userService.getTokensByUserId(userId, tokenId);
+  }
 
 
 }
