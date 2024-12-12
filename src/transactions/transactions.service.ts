@@ -69,7 +69,10 @@ export class TransactionsService {
       where: {
         userId,
         AND: filters.length > 0 ? filters : undefined,
-      }
+      },
+      orderBy: {
+        date: 'desc',
+      },
     })
   }
 
