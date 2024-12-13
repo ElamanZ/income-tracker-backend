@@ -30,7 +30,7 @@ export class DebtsService {
     })
   }
 
-  findAll(filter: DebtsFilterDto) {
+  findAll(filter: DebtsFilterDto, userId: string) {
 
     const filters: Prisma.DebtsWhereInput[] = []
 
@@ -61,8 +61,13 @@ export class DebtsService {
       });
     }
 
+    if (filter.fromDate) filters.push({ date: { gte: filter.fromDate } });
+    if (filter.toDate) filters.push({ date: { lte: filter.toDate } });
+
+
     return this.prisma.debts.findMany({
       where: {
+        userId,
         AND: filters.length > 0 ? filters : undefined,
       }
     })

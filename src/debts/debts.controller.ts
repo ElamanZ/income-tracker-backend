@@ -21,9 +21,10 @@ export class DebtsController {
 
   @Get()
   findAll(
-    @Query() filter: DebtsFilterDto
+    @Query() filter: DebtsFilterDto,
+    @CurrentUser('uid') userId: string
   ) {
-    return this.debtsService.findAll(filter);
+    return this.debtsService.findAll(filter, userId);
   }
 
   @Get(':id')

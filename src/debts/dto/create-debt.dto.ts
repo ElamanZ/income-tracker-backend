@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { dateString } from "src/utils/schemes/dateString.schema";
 import { z } from "zod";
 
 
@@ -8,6 +9,7 @@ export const createDebtSchema = z.object({
     amount: z.number().default(0),
     name: z.string(),
     comment: z.string().optional(),
+    date: dateString,
 })
 
 export class CreateDebtDto
@@ -25,4 +27,6 @@ export class CreateDebtDto
     name!: string;
     @ApiPropertyOptional()
     comment?: string;
+    @ApiProperty()
+    date!: Date;
 }

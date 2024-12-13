@@ -59,11 +59,14 @@ export class TransactionsService {
       })
     }
 
-    if (filter.category) {
+    if (filter.categoryId) {
       filters.push({
-        categoryId: filter.category
+        categoryId: filter.categoryId
       })
     }
+
+    if (filter.fromDate) filters.push({ date: { gte: filter.fromDate } });
+    if (filter.toDate) filters.push({ date: { lte: filter.toDate } });
 
     return this.prisma.transaction.findMany({
       where: {
@@ -74,6 +77,58 @@ export class TransactionsService {
         date: 'desc',
       },
     })
+  }
+
+  async findExpenses(filter: TransactionFilterDto, userId: string) {
+
+    const filters: Prisma.TransactionWhereInput[] = []
+
+    if (filter.categoryId) {
+      filters.push({
+        categoryId: filter.categoryId
+      })
+    }
+
+    if (filter.fromDate) filters.push({ date: { gte: filter.fromDate } });
+    if (filter.toDate) filters.push({ date: { lte: filter.toDate } });
+
+    const data = await this.prisma.transaction.findMany({
+      where: {
+        userId,
+        AND: filters.length > 0 ? filters : undefined,
+        isIncome: false,
+      }
+    })
+
+    const expenses = data.reduce((acc, curr) => acc + curr.amount, 0)
+
+    return expenses
+  }
+
+  async findIncomes(filter: TransactionFilterDto, userId: string) {
+
+    const filters: Prisma.TransactionWhereInput[] = []
+
+    if (filter.categoryId) {
+      filters.push({
+        categoryId: filter.categoryId
+      })
+    }
+
+    if (filter.fromDate) filters.push({ date: { gte: filter.fromDate } });
+    if (filter.toDate) filters.push({ date: { lte: filter.toDate } });
+
+    const data = await this.prisma.transaction.findMany({
+      where: {
+        userId,
+        AND: filters.length > 0 ? filters : undefined,
+        isIncome: true,
+      }
+    })
+
+    const incomes = data.reduce((acc, curr) => acc + curr.amount, 0)
+
+    return incomes
   }
 
   findOne(id: string, userId: string) {

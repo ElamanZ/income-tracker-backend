@@ -29,6 +29,22 @@ export class TransactionsController {
     return this.transactionsService.findAll(filter, userId);
   }
 
+  @Get('/expenses')
+  findExpenses(
+    @Query() filter: TransactionFilterDto,
+    @CurrentUser('uid') userId: string
+  ) {
+    return this.transactionsService.findExpenses(filter, userId);
+  }
+
+  @Get('/incomes')
+  findIncomes(
+    @Query() filter: TransactionFilterDto,
+    @CurrentUser('uid') userId: string
+  ) {
+    return this.transactionsService.findIncomes(filter, userId);
+  }
+
   @Get(':id')
   findOne(
     @Param('id') id: string,

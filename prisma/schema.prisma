@@ -50,6 +50,7 @@ model Debts {
   amount    Float    @map("amount")
   name      String   @map("name")
   comment   String?  @map("comment")
+  date      DateTime @map("date")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
   userId    String   @map("user_id")
