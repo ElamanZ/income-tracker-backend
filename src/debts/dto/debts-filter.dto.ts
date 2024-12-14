@@ -5,8 +5,8 @@ import { z } from "zod";
 
 export const debtsFilterSchema = z.object({
     search: z.string().optional(),
-    active: z.boolean().optional(),
-    isMyDebt: z.boolean().optional(),
+    active: z.enum(['all', 'true', 'false']).default('true'),
+    isMyDebt: z.enum(['all', 'true', 'false']).default('true'),
     amount: z.number().optional(),
     date: dateString.optional(),
     fromDate: dateString.optional(),
@@ -21,9 +21,9 @@ export class DebtsFilterDto
     @ApiPropertyOptional({ example: '' })
     search?: string;
     @ApiPropertyOptional()
-    active?: boolean;
+    active!: 'all' | 'true' | 'false';
     @ApiPropertyOptional()
-    isMyDebt?: boolean;
+    isMyDebt?: 'all' | 'true' | 'false';
     @ApiPropertyOptional({ example: 0 })
     amount?: number;
     @ApiPropertyOptional()

@@ -34,9 +34,11 @@ export class DebtsService {
 
     const filters: Prisma.DebtsWhereInput[] = []
 
-    if (filter.active) {
+
+
+    if (filter.active !== 'all') {
       filters.push({
-        active: filter.active
+        active: filter.active === 'true'
       })
     }
 
@@ -46,9 +48,9 @@ export class DebtsService {
       })
     }
 
-    if (filter.isMyDebt) {
+    if (filter.isMyDebt !== 'all') {
       filters.push({
-        isMyDebt: filter.isMyDebt
+        isMyDebt: filter.isMyDebt === 'true'
       })
     }
 
@@ -82,7 +84,45 @@ export class DebtsService {
     })
   }
 
-  update(id: string, userId: string, updateDebtDto: UpdateDebtDto) {
+  async update(id: string, userId: string, updateDebtDto: UpdateDebtDto) {
+
+    const existingDebt = await this.prisma.debts.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!existingDebt) {
+      throw new Error('Долг не найден');
+    }
+
+    const isBecomingInactive = existingDebt.active && updateDebtDto.active === false;
+    const isBecomingActive = !existingDebt.active && updateDebtDto.active === true;
+
+    if (isBecomingInactive) {
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          balance: {
+            increment: existingDebt.amount * (existingDebt.isMyDebt ? -1 : 1),
+          },
+        },
+      });
+    } else if (isBecomingActive) {
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          balance: {
+            increment: existingDebt.amount * (existingDebt.isMyDebt ? 1 : -1),
+          },
+        },
+      });
+    }
+
     return this.prisma.debts.update({
       where: {
         userId,
