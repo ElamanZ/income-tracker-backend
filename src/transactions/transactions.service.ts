@@ -79,6 +79,56 @@ export class TransactionsService {
     })
   }
 
+
+  async getCategorySummary(filter: TransactionFilterDto, userId: string) {
+    const filters: Prisma.TransactionWhereInput[] = [];
+
+
+
+    if (filter.isIncome) {
+      filters.push({ isIncome: filter.isIncome });
+    }
+    if (filter.categoryId) {
+      filters.push({ categoryId: filter.categoryId });
+    }
+    if (filter.fromDate) {
+      filters.push({ date: { gte: filter.fromDate } });
+    }
+    if (filter.toDate) {
+      filters.push({ date: { lte: filter.toDate } });
+    }
+
+    const transactions = await this.prisma.transaction.findMany({
+      where: {
+        userId,
+        AND: filters.length > 0 ? filters : undefined,
+      },
+      include: {
+        category: true,
+      },
+    });
+
+    // Группировка транзакций по категориям
+    const result = transactions.reduce((acc, transaction) => {
+      const { category } = transaction;
+      if (!category) return acc;
+
+      if (!acc[category.id]) {
+        acc[category.id] = {
+          name: category.name,
+          color: category.color,
+          value: 0,
+        };
+      }
+
+      acc[category.id].value += transaction.amount;
+      return acc;
+    }, {});
+
+    return Object.values(result);
+  }
+
+
   async findExpenses(filter: TransactionFilterDto, userId: string) {
 
     const filters: Prisma.TransactionWhereInput[] = []
@@ -140,22 +190,74 @@ export class TransactionsService {
     })
   }
 
-  update(id: string, updateTransactionDto: UpdateTransactionDto, userId: string) {
+  async update(id: string, updateTransactionDto: UpdateTransactionDto, userId: string) {
+
+    const existingTransaction = await this.prisma.transaction.findUnique({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!existingTransaction) {
+      throw new Error('Транзакция не найдена');
+    }
+
+    const amountDifference = updateTransactionDto.amount - existingTransaction.amount;
+
+    const balanceAdjustment = amountDifference * (updateTransactionDto.isIncome ? 1 : -1);
+
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        balance: {
+          increment: balanceAdjustment,
+        },
+      },
+    });
+
     return this.prisma.transaction.update({
       where: {
         id,
         userId,
       },
       data: updateTransactionDto,
-    })
+    });
   }
 
-  remove(id: string, userId: string) {
+  async remove(id: string, userId: string) {
+
+    const existingTransaction = await this.prisma.transaction.findUnique({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!existingTransaction) {
+      throw new Error('Транзакция не найдена');
+    }
+
+    const balanceAdjustment = existingTransaction.amount * (existingTransaction.isIncome ? -1 : 1);
+
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        balance: {
+          increment: balanceAdjustment,
+        },
+      },
+    });
+
     return this.prisma.transaction.delete({
       where: {
         id,
-        userId
+        userId,
       },
-    })
+    });
   }
 }

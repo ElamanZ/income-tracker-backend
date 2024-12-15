@@ -29,6 +29,14 @@ export class TransactionsController {
     return this.transactionsService.findAll(filter, userId);
   }
 
+  @Get('/categories-summary')
+  getCategorySummary(
+    @Query() filter: TransactionFilterDto,
+    @CurrentUser('uid') userId: string,
+  ) {
+    return this.transactionsService.getCategorySummary(filter, userId);
+  }
+
   @Get('/expenses')
   findExpenses(
     @Query() filter: TransactionFilterDto,

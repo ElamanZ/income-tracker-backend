@@ -89,6 +89,7 @@ export class DebtsService {
     const existingDebt = await this.prisma.debts.findUnique({
       where: {
         id,
+        userId
       },
     });
 
@@ -98,6 +99,8 @@ export class DebtsService {
 
     const isBecomingInactive = existingDebt.active && updateDebtDto.active === false;
     const isBecomingActive = !existingDebt.active && updateDebtDto.active === true;
+    const amountChanged = updateDebtDto.amount !== undefined && updateDebtDto.amount !== existingDebt.amount;
+
 
     if (isBecomingInactive) {
       await this.prisma.user.update({
@@ -123,6 +126,20 @@ export class DebtsService {
       });
     }
 
+    if (amountChanged) {
+      const amountDifference = updateDebtDto.amount - existingDebt.amount;
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          balance: {
+            increment: amountDifference * (existingDebt.isMyDebt ? 1 : -1),
+          },
+        },
+      });
+    }
+
     return this.prisma.debts.update({
       where: {
         userId,
@@ -132,7 +149,32 @@ export class DebtsService {
     })
   }
 
-  remove(id: string, userId: string) {
+  async remove(id: string, userId: string) {
+
+    const existingDebt = await this.prisma.debts.findUnique({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!existingDebt) {
+      throw new Error('Долг не найден');
+    }
+
+    const balanceAdjustment = existingDebt.amount * (existingDebt.isMyDebt ? -1 : 1);
+
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        balance: {
+          increment: balanceAdjustment,
+        },
+      },
+    });
+
     return this.prisma.debts.delete({
       where: {
         userId,
