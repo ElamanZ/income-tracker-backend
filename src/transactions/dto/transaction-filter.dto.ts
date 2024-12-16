@@ -1,10 +1,10 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { dateString } from "src/utils/schemes/dateString.schema";
+import { dateString } from "../../utils/schemes/dateString.schema";
 import { z } from "zod";
 
 export const transactionFilterSchema = z.object({
     comment: z.string().optional(),
-    isIncome: z.boolean().optional(),
+    isIncome: z.enum(['all', 'true', 'false']).default('all'),
     amount: z.number().optional(),
     categoryId: z.string().optional(),
     date: dateString.optional(),
@@ -20,7 +20,7 @@ export class TransactionFilterDto
     @ApiPropertyOptional()
     comment?: string;
     @ApiPropertyOptional()
-    isIncome?: boolean;
+    isIncome?: 'all' | 'true' | 'false';
     @ApiPropertyOptional()
     amount?: number;
     @ApiPropertyOptional()

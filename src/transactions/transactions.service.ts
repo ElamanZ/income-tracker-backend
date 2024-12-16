@@ -41,9 +41,9 @@ export class TransactionsService {
       })
     }
 
-    if (filter.isIncome) {
+    if (filter.isIncome !== 'all') {
       filters.push({
-        isIncome: filter.isIncome
+        isIncome: filter.isIncome === 'true'
       })
     }
 
@@ -85,8 +85,11 @@ export class TransactionsService {
 
 
 
-    if (filter.isIncome) {
-      filters.push({ isIncome: filter.isIncome });
+
+    if (filter.isIncome !== 'all') {
+      filters.push({
+        isIncome: filter.isIncome === 'true'
+      })
     }
     if (filter.categoryId) {
       filters.push({ categoryId: filter.categoryId });
@@ -108,7 +111,6 @@ export class TransactionsService {
       },
     });
 
-    // Группировка транзакций по категориям
     const result = transactions.reduce((acc, transaction) => {
       const { category } = transaction;
       if (!category) return acc;
